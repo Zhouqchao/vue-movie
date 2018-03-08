@@ -1,0 +1,185 @@
+<template>
+	<div>
+		<section class="movie-detail">
+			<app-loading-icon :isLoading="isLoading"></app-loading-icon>
+			<div v-if="movie">
+				<div class="cover">
+					<img :src="movie.images.small" alt="">
+				</div>
+				<div class="info">
+					<h2 class="title">{{movie.title}}</h2>
+					<p class="pubtime-country-type">
+						{{movie.year}} / {{movie.countries[0]}} / 
+						<span class="type">{{ type }}</span>
+					</p>
+					<p class="original-name">原名：{{movie.original_title}}</p>
+					<p class="pubtime-consise"></p>
+					<p class="duration"></p>
+					<p class="rating-counts">
+						<span>豆瓣评分：</span>
+						<span class="rating">{{movie.rating.average}}</span>
+						<p class="counts">评论数：{{movie.ratings_count}} 人次</p>
+					</p>
+				</div>
+				<div class="summary" :class="{part: !isClicked}" @click="isClicked = !isClicked">
+					<h3>剧情简介</h3>
+					{{movie.summary}}
+				</div>
+				<div class="filmer-wrapper">
+					<h3 class="title">影人</h3>
+					<ul class="filmers">
+						<li class="filmer" v-for="filmer in filmers">
+								<router-link :to="'/filmer/' + filmer.id">
+									<img class="filmer-img" :src="filmer.avatars.small">
+									<p class="filmer-name">{{filmer.name}}</p>
+									<p>演员</p>
+								</router-link>
+								<router-view></router-view>
+						 </li>
+					</ul>
+				</div>
+			</div>
+		</section>
+	</div>
+</template>
+
+<script>
+	import {mapGetters,mapActions} from 'vuex'
+	import LoadingIcon from './LoadingIcon.vue'
+	let _movie = null;
+	let _filmers = [];
+	let _type = '';
+
+	export default {
+		data() {
+			return {
+				movie: _movie,
+				filmers: _filmers,
+				type: _type,
+				isClicked: false
+			}
+		},
+		components: {
+			appLoadingIcon: LoadingIcon
+		},
+		created() {
+			this.$nextTick(function(){
+				if(!_movie || (_movie && _movie.id !== this.$route.params.id)) {
+					this.movie = _movie = null;
+					this.getMovieDetail();
+				}
+			})
+		},
+		computed: {
+			...mapGetters(
+					['isLoading']
+				)
+		},
+		methods: {
+			...mapActions(
+					['reverseIsLoading']
+				),
+			getMovieDetail() {
+
+				this.reverseIsLoading();
+				var vm = this;
+				this.$http.jsonp('http://api.douban.com/v2/movie/subject/'+ this.$route.params.id).then(res => {
+						_movie = res = res.body;
+						this.movie = _movie;
+						_filmers = res.directors.concat(res.casts);	
+						let vm = this;
+
+						_filmers.forEach(function(filmer){
+							if(!filmer.avatars){
+								return false;
+							}
+							_filmers.push(filmer);
+						})
+
+						this.filmers = _filmers;
+
+						_type = _movie.genres.join(' / ');
+
+						this.type = _type;
+
+						this.reverseIsLoading();
+					})
+				}
+		}
+	}
+</script>
+
+<style lang="scss" scoped>
+	.movie-detail {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		overflow: scroll;
+		background-color: #fff;
+		padding: 2% 8%;
+		line-height: 1.5;
+		margin-bottom: 150px;	
+		z-index: 20;
+
+		& > div{
+			margin-bottom: 20px;
+		}
+
+		.cover{
+			width: 100%;
+			padding: 20px 50px;
+			margin-bottom: 20px;
+			text-align: center;
+			box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+
+			img{
+				width: 100%;
+			}
+		}
+
+		.summary{
+			display: -webkit-box;
+			-webkit-box-orient:vertical;
+			overflow: hidden;
+
+			&.part{
+				-webkit-line-clamp:3;
+			}
+		}
+
+		.filmers{
+			width: 100%;
+			white-space: nowrap;
+			overflow-x: scroll;
+
+			&::-webkit-scrollbar {
+			    height: 1em;
+			}		
+
+			&::-webkit-scrollbar-thumb{
+				background-color:transparent;
+			}
+
+			.filmer{
+				display: inline-block;
+				width: 33.3333%;
+				text-align: center;
+
+				.filmer-img{
+					width: 100%;
+					height: 113px;
+				}
+
+				.filmer-name{
+					font-size: 12px;
+					white-space: nowrap;
+					text-overflow: ellipsis;
+					overflow: hidden;
+				}	
+			}
+		}
+	}
+
+</style>
