@@ -34,16 +34,19 @@
 	import {mapGetters,mapActions} from 'vuex'
 	import LoadingIcon from './LoadingIcon.vue'
 
+	let _filmer = null;
+
 	export default {
 		data() {
 			return {
-				filmer: null
+				filmer: _filmer
 			}
 		},
 		created() {
-			this.$nextTick(() => {
-				this.getFilmerData();
-			})
+				if(!_filmer || (_filmer && _filmer.id !== this.$route.params.id)) {
+					this.filmer = _filmer = null;
+					this.getFilmerData();
+				}
 		},			
 		components: {
 			appLoadingIcon: LoadingIcon
@@ -58,10 +61,11 @@
 				['reverseIsLoading']
 			),
 			getFilmerData() {
+				_filmer = null;
 				this.reverseIsLoading();
 
 				this.$http.jsonp('http://api.douban.com/v2/movie/celebrity/' + this.$route.params.id).then(res => {
-					this.filmer = res.body;
+					this.filmer = _filmer = res.body;
 					this.reverseIsLoading();
 				})
 			}
@@ -70,12 +74,25 @@
 </script>
 
 <style lang="scss" scoped>
+
+@keyframes moveInFromLeft {
+	from {
+		transform: translateY(-100px);
+		opacity: 0;
+	}
+	to {
+		transform: translateY(0);
+		opacity: 1;
+	}
+}
+
 .avatar{
 	width: 60%;
 	margin: 20px auto;
 	padding: 20px 30px;
 	text-align: center;
 	box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+	animation: moveInFromLeft .6s ease-out;
 
 	img{
 		height: 240px;

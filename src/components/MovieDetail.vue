@@ -4,7 +4,7 @@
 			<app-loading-icon :isLoading="isLoading"></app-loading-icon>
 			<div v-if="movie">
 				<div class="cover">
-					<img :src="movie.images.small" alt="">
+					<img :src="movie.images.small">
 				</div>
 				<div class="info">
 					<h2 class="title">{{movie.title}}</h2>
@@ -18,6 +18,7 @@
 					<p class="rating-counts">
 						<span>豆瓣评分：</span>
 						<span class="rating">{{movie.rating.average}}</span>
+						<app-star :score="movie.rating.average"></app-star>
 						<p class="counts">评论数：{{movie.ratings_count}} 人次</p>
 					</p>
 				</div>
@@ -28,11 +29,11 @@
 				<div class="filmer-wrapper">
 					<h3 class="title">影人</h3>
 					<ul class="filmers">
-						<li class="filmer" v-for="filmer in filmers">
+						<li class="filmer" v-for="(filmer, index) in filmers">
 								<router-link :to="'/filmer/' + filmer.id">
 									<img class="filmer-img" :src="filmer.avatars.small">
 									<p class="filmer-name">{{filmer.name}}</p>
-									<p>演员</p>
+									<p>{{index === 0 ? '导演' : '演员'}}</p>
 								</router-link>
 								<router-view></router-view>
 						 </li>
@@ -46,6 +47,8 @@
 <script>
 	import {mapGetters,mapActions} from 'vuex'
 	import LoadingIcon from './LoadingIcon.vue'
+	import Star from './star/star.vue'
+
 	let _movie = null;
 	let _filmers = [];
 	let _type = '';
@@ -60,15 +63,14 @@
 			}
 		},
 		components: {
-			appLoadingIcon: LoadingIcon
+			appLoadingIcon: LoadingIcon,
+			appStar: Star
 		},
 		created() {
-			this.$nextTick(function(){
 				if(!_movie || (_movie && _movie.id !== this.$route.params.id)) {
 					this.movie = _movie = null;
 					this.getMovieDetail();
 				}
-			})
 		},
 		computed: {
 			...mapGetters(
@@ -80,7 +82,6 @@
 					['reverseIsLoading']
 				),
 			getMovieDetail() {
-
 				this.reverseIsLoading();
 				var vm = this;
 				this.$http.jsonp('http://api.douban.com/v2/movie/subject/'+ this.$route.params.id).then(res => {
@@ -110,6 +111,18 @@
 </script>
 
 <style lang="scss" scoped>
+
+	@keyframes moveInFromLeft {
+		from {
+			transform: translateY(-100px);
+			opacity: 0;
+		}
+		to {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
 	.movie-detail {
 		position: fixed;
 		top: 0;
@@ -126,16 +139,25 @@
 		& > div{
 			margin-bottom: 20px;
 		}
-
 		.cover{
 			width: 100%;
+			min-height: 280px;
 			padding: 20px 50px;
 			margin-bottom: 20px;
 			text-align: center;
 			box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+			animation: moveInFromLeft .6s ease-out;
 
 			img{
 				width: 100%;
+			}
+		}
+
+		.info {
+			.rating {
+				color: orangered;
+				font-weight: bold;
+				margin-right: 4px;
 			}
 		}
 
