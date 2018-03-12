@@ -84,6 +84,7 @@
 
 				this.$http.jsonp('https://api.douban.com/v2/movie/top250', {params: {
 					start: this.config.start, count: this.config.count}}).then(res => {
+						document.title = res.body.title;
 						res = res.body.subjects;
 						topMovies = topMovies.concat(res);
 						this.movies = topMovies;
@@ -103,6 +104,7 @@
 
 		.top250{
 			display: none;
+			padding-bottom: 20px;
 
 			&.active{
 				display: block;

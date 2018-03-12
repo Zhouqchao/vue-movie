@@ -108,7 +108,15 @@
 	.workList{
 		width: 100%;
 		white-space: nowrap;
-		overflow-x: scroll;
+		overflow-x: scroll;		
+
+		&::-webkit-scrollbar {
+			    height: 1em;
+		}		
+
+		&::-webkit-scrollbar-thumb{
+			background-color:transparent;
+		}
 
 		li{
 			display: inline-block;

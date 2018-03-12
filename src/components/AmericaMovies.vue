@@ -71,6 +71,6 @@ export default {
 
 <style lang="scss" scoped>
 	.us {
-		margin-bottom: 50px;
+		padding-bottom: 50px;
 	}
 </style>

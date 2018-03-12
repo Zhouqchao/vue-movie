@@ -1,7 +1,8 @@
 <template>
     <section class="search">
 				<form>
-					<input class="search-input" type="text" v-model.trim="keyword" placeholder="请输入电影名,导演..." autofocus autocomplete="off" @keyup.enter="searchMovies">
+					<input class="search-input" type="text" v-model.trim="keyword" placeholder="搜索电影、电视剧、综艺、影人" autofocus autocomplete="off" @keyup.enter="searchMovies" ref="inputValue">
+					<span class="search-empty" @click="emptySearch" v-show="!isEmpty">x</span>
 					<button class="search-btn" @click.prevent="searchMovies">搜索</button>
 				</form>
 				<app-loading-icon :isLoading="isLoading"></app-loading-icon>
@@ -31,12 +32,18 @@
 	  	appMovieItem: MovieItem,
 	  	appHeading: Heading
 	  },		
+	  beforeCreate() {
+	  	document.title = '电影搜索';
+	  },
 	  computed: {
 			...mapGetters(
 					['isLoading']
 				),
 			hasMovieLeft() {
 				return this.movies.length === 0
+			},
+			isEmpty() {
+				return this.keyword === "";
 			}
 		},
 		methods: {
@@ -54,17 +61,21 @@
 
 				this.$http.jsonp('https://api.douban.com/v2/movie/search', {params: {
 					q:this.keyword}}).then(res => {
+						this.$refs.inputValue.blur();
 						this.movies = res = res.body.subjects;
 						this.reverseIsLoading();
 					});
 			},
+			emptySearch() {
+				this.keyword = "";
+			}
 		}
 	}
 </script>
 
 <style lang="scss" scoped>
 	.search {
-		margin-bottom: 50px;
+		padding-bottom: 50px;
 
 		form{
 		  width: 95%;
@@ -75,6 +86,7 @@
 		  line-height: 30px;
 		  padding-bottom: 12px;
 		  border-bottom: 1px solid rgba(0,0,0,.1);
+		  position: relative;
 
 			.search-input{
 				width: calc(100% - 72px);
@@ -85,6 +97,15 @@
 			  border-radius: 5px;
 			  font-size: 16px;
 			}   
+
+			.search-empty {
+				font-size: 22px;
+				font-family: Arial;
+				color: rgba(0,0,0,.6);
+				position: absolute;
+				top: 0;
+				left: calc(100% - 92px);
+			}
 
 			.search-btn{
 		    border: none;
