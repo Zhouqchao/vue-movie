@@ -82,7 +82,7 @@
 
 				this.reverseIsLoading();
 
-				this.$http.jsonp('http://api.douban.com/v2/movie/top250', {params: {
+				this.$http.jsonp('https://api.douban.com/v2/movie/top250', {params: {
 					start: this.config.start, count: this.config.count}}).then(res => {
 						res = res.body.subjects;
 						topMovies = topMovies.concat(res);

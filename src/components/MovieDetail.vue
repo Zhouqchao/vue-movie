@@ -84,7 +84,7 @@
 			getMovieDetail() {
 				this.reverseIsLoading();
 				var vm = this;
-				this.$http.jsonp('http://api.douban.com/v2/movie/subject/'+ this.$route.params.id).then(res => {
+				this.$http.jsonp('https://api.douban.com/v2/movie/subject/'+ this.$route.params.id).then(res => {
 						_movie = res = res.body;
 						this.movie = _movie;
 						_filmers = res.directors.concat(res.casts);	

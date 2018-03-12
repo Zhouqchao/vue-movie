@@ -64,7 +64,7 @@
 				_filmer = null;
 				this.reverseIsLoading();
 
-				this.$http.jsonp('http://api.douban.com/v2/movie/celebrity/' + this.$route.params.id).then(res => {
+				this.$http.jsonp('https://api.douban.com/v2/movie/celebrity/' + this.$route.params.id).then(res => {
 					this.filmer = _filmer = res.body;
 					this.reverseIsLoading();
 				})

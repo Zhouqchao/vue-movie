@@ -52,7 +52,7 @@
 
 				this.reverseIsLoading();
 
-				this.$http.jsonp('http://api.douban.com/v2/movie/search', {params: {
+				this.$http.jsonp('https://api.douban.com/v2/movie/search', {params: {
 					q:this.keyword}}).then(res => {
 						this.movies = res = res.body.subjects;
 						this.reverseIsLoading();
