@@ -52,7 +52,7 @@ export default {
 
 			const vm = this;
 
-			this.$http.jsonp('http://api.douban.com/v2/movie/us_box').then(res => {
+			this.$http.jsonp('https://api.douban.com/v2/movie/us_box').then(res => {
 					document.title = res.body.title;
 
 					res = res.body.subjects;
