@@ -105,6 +105,7 @@
 				position: absolute;
 				top: 0;
 				left: calc(100% - 92px);
+				cursor: pointer;
 			}
 
 			.search-btn{
