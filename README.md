@@ -5,7 +5,7 @@
 
 点击预览: <a target="_blank" href="https://vue-movie.zhouqichao.com">vue-movie</a>
 
-## 页面
+## 简介
 
 1. 首页
 	+ top250榜单
