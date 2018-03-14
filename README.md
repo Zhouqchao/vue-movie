@@ -1,6 +1,22 @@
-# vue-movie
+# vue-movie: 类移动端豆瓣电影
+> 使用豆瓣电影API
 
-> A Vue.js project
+技术栈：JavaScript/jQuery/Vue/Webpack
+
+点击预览: <a target="_blank" href="https://vue-movie.zhouqichao.com">vue-movie</a>
+
+## 页面
+
+1. 首页
++ top250榜单
++ 北美电影票房榜
++ 电影搜索
+2. 电影详情页
++ 电影简介
++ 电影演员列表
+3. 演员详情页
++ 演员简介
++ 演员作品列表
 
 ## Build Setup
 
