@@ -148,7 +148,7 @@
 		background-color: #fff;
 		padding: 2% 8%;
 		line-height: 1.5;
-		margin-bottom: 150px;	
+		margin-bottom: 200px;	
 
 		& > div{
 			margin-bottom: 20px;
