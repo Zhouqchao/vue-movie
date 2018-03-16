@@ -12,7 +12,6 @@ Vue.use(VueResource)
 export const router = new VueRouter({
 	routes,
 	mode: 'history',
-  root: '/vue-movie',
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition;

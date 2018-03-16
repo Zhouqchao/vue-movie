@@ -7,24 +7,27 @@ import Filmer from './components/Filmer.vue'
 export const routes= [
 	{
 		path: '/',
-		component: TopMovies,
-		children: [
-			{
-				path: '/movie/:id',
-				component: MovieDetail
-			}
-		]
+		name: 'top',
+		component: TopMovies
+	},
+	{
+		path: '/movie/:id',
+		name: 'moviedetail',
+		component: MovieDetail
 	},
 	{
 		path: '/america',
+		name: 'america',
 		component: AmericaMovies
 	},
 	{
 		path: '/search',
+		name: 'search',
 		component: SearchMovie
 	},
 	{
 		path: '/filmer/:id',
+		name: 'filmer',
 		component: Filmer
 	}
 ];

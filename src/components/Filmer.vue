@@ -1,8 +1,8 @@
 <template>
 	<section id="filmer">
-		<div v-if="filmer">
-			<div class="avatar">
-				<img :src="filmer.avatars.small">
+		<div v-if="filmer" :style="{display: filmer ? 'block' : 'none'}">
+			<div class="avatar" :style="{display: filmer.avatars ? 'block' : 'none'}">
+				<img v-if="filmer.avatars" :src="filmer.avatars.small">
 			</div>
 			<div class="info">
 				<div class="name-collect">
@@ -12,15 +12,14 @@
 					</div>
 				</div>
 				<div class="works">
-					<h3>代表作品</h3>
+					<h3 :style="{display: filmer.works ? 'block' : 'none'}">代表作品</h3>
 					<ul class="workList">
 						<li v-for="work in filmer.works">
-							<router-link :to="'/movie/' + work.subject.id">
-								<img class="work-img" :src="work.subject.images.small" :alt="work.subject.title">
+							<router-link :to="{name:'moviedetail',params:{id:work.subject.id}}">
+								<img v-if="work.subject.images" class="work-img" :src="work.subject.images.small" :alt="work.subject.title">
 								<h3 class="work-title">{{work.subject.title}}</h3>
 								<p class="role">{{work.roles[0]}}</p>
 							</router-link>
-							<router-view></router-view>
 						</li>
 					</ul>
 				</div>
@@ -34,20 +33,30 @@
 	import {mapGetters,mapActions} from 'vuex'
 	import LoadingIcon from './LoadingIcon.vue'
 
-	let _filmer = null;
-
 	export default {
 		data() {
 			return {
-				filmer: _filmer
+				filmer: {},
+				id: ''
 			}
 		},
-		created() {
-				if(!_filmer || (_filmer && _filmer.id !== this.$route.params.id)) {
-					this.filmer = _filmer = null;
-					this.getFilmerData();
+		// created() {
+		// 	this.$nextTick(()=> {
+		// 		this.getFilmerData();
+		// 	})
+		// },
+		beforeRouteEnter(to, from, next) {
+			next(vm => {
+				if(to.params.id !== vm.id) {
+					vm.filmer = {};
+					vm.getFilmerData();
 				}
-		},			
+			})
+		},	
+		beforeRouteLeave(to, from, next) {
+			this.id = from.params.id;
+			next();
+		},
 		components: {
 			appLoadingIcon: LoadingIcon
 		},	
@@ -61,12 +70,11 @@
 				['reverseIsLoading']
 			),
 			getFilmerData() {
-				_filmer = null;
 				this.reverseIsLoading();
 
 				this.$http.jsonp('https://api.douban.com/v2/movie/celebrity/' + this.$route.params.id).then(res => {
-					this.filmer = _filmer = res.body;
 					this.reverseIsLoading();
+					this.filmer = res.body;
 				})
 			}
 		}
@@ -75,7 +83,7 @@
 
 <style lang="scss" scoped>
 
-@keyframes moveInFromLeft {
+@keyframes moveInFromTop {
 	from {
 		transform: translateY(-100px);
 		opacity: 0;
@@ -86,13 +94,25 @@
 	}
 }
 
+@keyframes moveInFromLeft {
+	from {
+		transform: translateX(-100px);
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
+}
+
 .avatar{
 	width: 60%;
 	margin: 20px auto;
+	min-height: 200px;
 	padding: 20px 30px;
 	text-align: center;
 	box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
-	animation: moveInFromLeft .6s ease-out;
+	animation: moveInFromTop .6s ease-out;
 
 	img{
 		height: 240px;
@@ -126,6 +146,7 @@
 			.work-img{
 				width: 100%;
 				height: 127px;
+				animation: moveInFromLeft .6s ease-out;
 			}
 
 			.work-title{

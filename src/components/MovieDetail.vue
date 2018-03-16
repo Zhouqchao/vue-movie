@@ -2,9 +2,9 @@
 	<div>
 		<section class="movie-detail">
 			<app-loading-icon :isLoading="isLoading"></app-loading-icon>
-			<div v-if="movie">
+			<div v-if="movie" :style="{display: movie ? 'block' : 'none'}">
 				<div class="cover">
-					<img :src="movie.images.small">
+					<img v-if="movie.images"  :src="movie.images.small">
 				</div>
 				<div class="info">
 					<h2 class="title">{{movie.title}}</h2>
@@ -30,12 +30,14 @@
 					<h3 class="title">影人</h3>
 					<ul class="filmers">
 						<li class="filmer" v-for="(filmer, index) in filmers">
-								<router-link :to="'/filmer/' + filmer.id">
-									<img class="filmer-img" :src="filmer.avatars.small">
+								<router-link :to="{name:'filmer',params:{id:filmer.id}}">
+									<img class="filmer-img" v-if="filmer.avatars"  :src="filmer.avatars.small">
 									<p class="filmer-name">{{filmer.name}}</p>
 									<p>{{index === 0 ? '导演' : '演员'}}</p>
 								</router-link>
-								<router-view></router-view>
+								<!-- <keep-alive> -->
+									<!-- <router-view></router-view> -->
+								<!-- </keep-alive> -->
 						 </li>
 					</ul>
 				</div>
@@ -49,33 +51,43 @@
 	import LoadingIcon from './LoadingIcon.vue'
 	import Star from './star/star.vue'
 
-	let _movie = null;
-	let _filmers = [];
-	let _type = '';
-
 	export default {
 		data() {
 			return {
-				movie: _movie,
-				filmers: _filmers,
-				type: _type,
-				isClicked: false
+				movie: null,
+				filmers : [],
+				type : '',
+				isClicked: false,
+				id: ''
 			}
 		},
 		components: {
 			appLoadingIcon: LoadingIcon,
 			appStar: Star
 		},
-		created() {
-				if(!_movie || (_movie && _movie.id !== this.$route.params.id)) {
-					this.movie = _movie = null;
-					this.getMovieDetail();
-				}
-		},
+		// created() {
+		// 		this.getMovieDetail();
+		// },
 		computed: {
 			...mapGetters(
 					['isLoading']
 				)
+		},
+		beforeRouteEnter(to, from, next) {
+			next(vm => {
+				if(to.params.id !== vm.id) {
+					vm.movie = null,
+					vm.filmers = [],
+					vm.type = '',
+					vm.$nextTick(() => {
+						vm.getMovieDetail();
+					})
+				}
+			})
+		},	
+		beforeRouteLeave(to, from, next) {
+			this.id = from.params.id;
+			next();
 		},
 		methods: {
 			...mapActions(
@@ -85,25 +97,21 @@
 				this.reverseIsLoading();
 				var vm = this;
 				this.$http.jsonp('https://api.douban.com/v2/movie/subject/'+ this.$route.params.id).then(res => {
-						_movie = res = res.body;
-						this.movie = _movie;
-						_filmers = res.directors.concat(res.casts);	
+						this.reverseIsLoading();
+						
+						this.movie = res = res.body;
+						this.filmers = res.directors.concat(res.casts);	
 						let vm = this;
 
-						_filmers.forEach(function(filmer){
+						this.filmers.forEach(function(filmer){
 							if(!filmer.avatars){
 								return false;
 							}
-							_filmers.push(filmer);
+							vm.filmers.push(filmer);
 						})
 
-						this.filmers = _filmers;
+						this.type = this.movie.genres.join(' / ');
 
-						_type = _movie.genres.join(' / ');
-
-						this.type = _type;
-
-						this.reverseIsLoading();
 					})
 				}
 		}
@@ -112,7 +120,7 @@
 
 <style lang="scss" scoped>
 
-	@keyframes moveInFromLeft {
+	@keyframes moveInFromTop {
 		from {
 			transform: translateY(-100px);
 			opacity: 0;
@@ -122,19 +130,25 @@
 			opacity: 1;
 		}
 	}
+	@keyframes moveInFromLeft {
+		from {
+			transform: translateX(-100px);
+			opacity: 0;
+		}
+		to {
+			transform: translateX(0);
+			opacity: 1;
+		}
+	}
 
 	.movie-detail {
-		position: fixed;
-		top: 0;
-		left: 0;
 		width: 100%;
 		height: 100%;
-		overflow: scroll;
+		// overflow: scroll;
 		background-color: #fff;
 		padding: 2% 8%;
 		line-height: 1.5;
 		margin-bottom: 150px;	
-		z-index: 20;
 
 		& > div{
 			margin-bottom: 20px;
@@ -146,7 +160,7 @@
 			margin-bottom: 20px;
 			text-align: center;
 			box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
-			animation: moveInFromLeft .6s ease-out;
+			animation: moveInFromTop .6s ease-out;
 
 			img{
 				width: 100%;
@@ -192,6 +206,8 @@
 				.filmer-img{
 					width: 100%;
 					height: 113px;
+					background-color: #ccc;
+					animation: moveInFromLeft .6s ease-out;
 				}
 
 				.filmer-name{

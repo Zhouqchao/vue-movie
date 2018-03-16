@@ -7,9 +7,6 @@
 			<app-loading-icon :isLoading="isLoading"></app-loading-icon>
 			<app-heading title="Top250加载完毕！"  :hasMovieLeft="hasMovieLeft"></app-heading>
 		</div>
-		<router-view></router-view>
-
-
 	</section>
 </template>
 
@@ -19,12 +16,10 @@
 	import MovieItem from './MovieItem.vue'
 	import Heading from './Heading.vue'
 
-	let topMovies = [];
-
 	export default {
 		data() {
 			return {
-				movies: topMovies,
+				movies: [],
 				config: {
 					start: 0,
 					count: 10
@@ -45,11 +40,7 @@
 			}
 		},
 		created() {
-			this.$nextTick(() => {
-				if(topMovies.length === 0) {
-					this.getMovies();
-				}
-			})
+			this.getMovies();
 		},
 		methods: {
 			...mapActions(
@@ -84,12 +75,11 @@
 
 				this.$http.jsonp('https://api.douban.com/v2/movie/top250', {params: {
 					start: this.config.start, count: this.config.count}}).then(res => {
+						this.reverseIsLoading();
 						document.title = res.body.title;
 						res = res.body.subjects;
-						topMovies = topMovies.concat(res);
-						this.movies = topMovies;
+						this.movies = this.movies.concat(res);
 						this.config.start += this.config.count;
-						this.reverseIsLoading();
 					});
 			},
 		}
