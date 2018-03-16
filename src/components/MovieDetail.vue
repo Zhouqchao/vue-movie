@@ -35,9 +35,6 @@
 									<p class="filmer-name">{{filmer.name}}</p>
 									<p>{{index === 0 ? '导演' : '演员'}}</p>
 								</router-link>
-								<!-- <keep-alive> -->
-									<!-- <router-view></router-view> -->
-								<!-- </keep-alive> -->
 						 </li>
 					</ul>
 				</div>
@@ -148,7 +145,7 @@
 		background-color: #fff;
 		padding: 2% 8%;
 		line-height: 1.5;
-		margin-bottom: 200px;	
+		padding-bottom: 100px;	
 
 		& > div{
 			margin-bottom: 20px;

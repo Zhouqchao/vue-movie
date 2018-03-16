@@ -4,7 +4,6 @@
 			<span>&nbsp;{{ 'No.' + (rankNum + 1)}}&nbsp;</span>
 			&nbsp;<span>&nbsp;{{rankTitle}}&nbsp;</span>
 		</div>
-		<!-- <router-link :to="'/movie/' + movie.id"> -->
 		<router-link :to="{name:'moviedetail',params:{id: movie.id}}">
 			<div class="movie-photo">
 				<img :src="movie.images.small">
@@ -23,9 +22,6 @@
 				<p class="actor">{{actors}}</p>
 			</div>	
 		</router-link>	
-<!-- 		<keep-alive>
-			<router-view></router-view>
-		</keep-alive> -->
 	</li>
 </template>
 
