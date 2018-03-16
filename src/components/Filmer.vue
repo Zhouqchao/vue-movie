@@ -105,6 +105,9 @@
 	}
 }
 
+#filmer {
+	padding-bottom: 200px;
+}
 .avatar{
 	width: 60%;
 	margin: 20px auto;
